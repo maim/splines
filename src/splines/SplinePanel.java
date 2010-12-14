@@ -52,20 +52,20 @@ public class SplinePanel extends JPanel implements MouseListener, MouseMotionLis
 		g.setColor(Color.RED);
 		for (int i = 0; i < liste.size(); i++) {
 			g.setColor(Color.RED);
-			Point p1 = points.get(i);
-			g.drawLine(p1.x-2, p1.y-2, p1.x+2, p1.y+2);
-			g.drawLine(p1.x-2, p1.y+2, p1.x+2, p1.y-2);
+			Point2f p1 = liste.get(i);
+			g.drawLine((int)p1.x-2, (int)p1.y-2, (int)p1.x+2, (int)p1.y+2);
+			g.drawLine((int)p1.x-2, (int)p1.y+2, (int)p1.x+2, (int)p1.y-2);
 		}
 	}
 	
 	private void drawSpline(ArrayList<Point> liste, Graphics g) {
 		if (liste.size() >= 2) {
-			for(int i = 0; i < liste.size(); i+=2) {
+			for(int i = 0; i < liste.size()-1; i++) {
 				Point p1 = liste.get(i);
 				Point p2 = liste.get(i+1);
 				Point2f t1 = tangents.get(i);
 				Point2f t2 = tangents.get(i+1);
-				drawPoints2f(interpolateLine(p1, p2, t1, t2, 10), g);
+				drawPoints2f(interpolateLine(p1, p2, t1, t2, 200), g);
 			}
 		}
 	}
@@ -118,18 +118,15 @@ public class SplinePanel extends JPanel implements MouseListener, MouseMotionLis
 		Gauss.print("A inverse", Ainverse);
 		Gauss.print("B", B);
 		Gauss.print("Px", Px);
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+		System.out.println(Ainverse[0].length+" "+B.length+" "+B[0].length+" "+Px.length+" "+Py.length);
+//		Gauss.multipliziereMatizen(Ainverse, B);
+		double[][] p_x = Gauss.multipliziereMatizen(Ainverse, Gauss.multipliziereMatizen(B, Px));
+		double[][] p_y = Gauss.multipliziereMatizen(Ainverse, Gauss.multipliziereMatizen(B, Py));
+		
+		for(int i = 0; i < points.size(); i++) {
+			tangents.add(new Point2f((float)p_x[i][0], (float)p_y[i][0]));
 		}
-//		double[][] blub = (B, Px);
-//		double[][] p_x = Matrix.MultiplyMatrix(Ainverse, blub);
-//		double[][] p_y = Matrix.MultiplyMatrix(Ainverse, Matrix.MultiplyMatrix(B, Py));
-//		for(int i = 0; i < points.size(); i++) {
-//			tangents.add(new Point2f(p_x[i][0], p_y[i][0]));
-//		}
 	}
 
 
@@ -210,18 +207,22 @@ public class SplinePanel extends JPanel implements MouseListener, MouseMotionLis
 	}
 	
 	private double[][] createMatrixPx() {
-		double[][] erg = new double[points.size()][1];
-		for(int i = 0; i < points.size(); i++) {
+		double[][] erg = new double[points.size()+2][1];
+		erg[0][0] = 0;
+		for(int i = 1; i < points.size()-1; i++) {
 			erg[i][0] = points.get(i).x;
 		}
+		erg[points.size()][0] = 0;
 		return erg;
 	}
 	
 	private double[][] createMatrixPy() {
-		double[][] erg = new double[points.size()][1];
-		for(int i = 0; i < points.size(); i++) {
+		double[][] erg = new double[points.size()+2][1];
+		erg[0][0] = 0;
+		for(int i = 1; i < points.size()-1; i++) {
 			erg[i][0] = points.get(i).y;
 		}
+		erg[points.size()][0] = 0;
 		return erg;
 	}
 	/*

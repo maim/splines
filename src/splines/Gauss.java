@@ -204,6 +204,32 @@ public class Gauss {
 
 		return r;
 	}
+	
+	/**
+	 * Matrizen multiplizieren
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static double[][] multipliziereMatizen(double[][] a, double[][] b) {
+		
+		if(a[0].length != b.length)
+			throw new RuntimeException("Matrices incompatible for multiplication");
+		
+		double matrix[][] = new double[a.length][b[0].length];
+
+		//cycle through answer matrix
+		for(int i = 0; i < matrix.length; i++){
+			for(int j = 0; j < matrix[i].length; j++){
+				matrix[i][j] = 0;
+				for(int k =0; k<a[0].length; k++)
+				{
+					matrix[i][j] += a[i][k]*b[k][j]; 
+				}
+			}
+		}
+		return matrix;
+	}
 
 	/**
 	 * Beispielprogramm
